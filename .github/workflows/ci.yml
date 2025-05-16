@@ -44,6 +44,20 @@ jobs:
         run: |
           git submodule update --init --recursive vcpkg
 
+      - name: Get commit short SHA
+        uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+        
+      - name: Compute version
+        id: compute_version
+        shell: bash
+        run: |
+          version="${{ steps.short-sha.outputs.sha }}"
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            version=$(echo ${{ github.ref }} | sed -E 's/refs\/tags\/(v)?//g')
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2
         with:
@@ -61,7 +75,7 @@ jobs:
       - name: Configure CMake
         shell: bash
         run: |
-          cmake .
+          cmake . -DPLUGIN_VERSION=${{ steps.compute_version.outputs.version }}
 
       - name: Build
         shell: bash

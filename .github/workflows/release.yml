@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    env:
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-2022]
+        build_type: [Release]
+        # Adds a platform value to the matrix, used later on to run the appropriate
+        # package command.
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: mac
+          - os: windows-2022
+            platform: win
+
+    steps:
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          git submodule update --init --recursive vcpkg
+
+      - name: Get version
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.30.x'
+
+      - name: Use cmake
+        run: cmake --version
+
+      - name: Setup MacOS environment
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install utf8proc
+
+      - name: Configure CMake
+        shell: bash
+        run: |
+          cmake . -DPLUGIN_VERSION=${{ steps.get_version.outputs.version-without-v }} 
+
+      - name: Build
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cmake --build . --config ${{ matrix.build_type }}
+    
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+            tag_name: ${{ github.ref_name }}
+            name: CoFrance ${{ steps.get_version.outputs.version-without-v }}
+            prerelease: false
+            draft: true
+
+      - name: Upload arctifact (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+            tag_name: ${{ github.ref_name }}
+            files: |
+              lib/CoFrance.so
+
+      - name: Upload arctifact (MacOS)
+        if: matrix.os == 'macos-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+            tag_name: ${{ github.ref_name }}
+            files: |
+              lib/CoFrance.dylib
+
+      - name: Upload arctifact (Windows)
+        if: matrix.os == 'windows-2022'
+        uses: softprops/action-gh-release@v1
+        with:
+            tag_name: ${{ github.ref_name }}
+            files: |
+              bin\Release\CoFrance.dll

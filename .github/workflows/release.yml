@@ -70,35 +70,36 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cmake --build . --config ${{ matrix.build_type }}
-    
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+
+      - name: Upload arctifact to release (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: softprops/action-gh-release@v2
         with:
             tag_name: ${{ github.ref_name }}
             name: CoFrance ${{ steps.get_version.outputs.version-without-v }}
             prerelease: false
             draft: true
-
-      - name: Upload arctifact (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        uses: softprops/action-gh-release@v1
-        with:
-            tag_name: ${{ github.ref_name }}
             files: |
               lib/CoFrance.so
 
-      - name: Upload arctifact (MacOS)
+      - name: Upload arctifact to release (MacOS)
         if: matrix.os == 'macos-latest'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
             tag_name: ${{ github.ref_name }}
+            name: CoFrance ${{ steps.get_version.outputs.version-without-v }}
+            prerelease: false
+            draft: true
             files: |
               lib/CoFrance.dylib
 
-      - name: Upload arctifact (Windows)
+      - name: Upload arctifact to release (Windows)
         if: matrix.os == 'windows-2022'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
             tag_name: ${{ github.ref_name }}
+            name: CoFrance ${{ steps.get_version.outputs.version-without-v }}
+            prerelease: false
+            draft: true
             files: |
-              bin\Release\CoFrance.dll
+              bin/Release/CoFrance.dll

@@ -73,7 +73,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NeoCCAMS-${{ matrix.platform }}
+          name: CoFrance-${{ matrix.platform }}
           path: |
             lib/CoFrance.*
             bin\${{ matrix.build_type }}\CoFrance.dll

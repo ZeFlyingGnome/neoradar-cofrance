@@ -1,4 +1,5 @@
 // GateAssigner.cpp
+#include <numeric>
 #include "GateAssigner.h"
 
 namespace GateAssigner

@@ -85,7 +85,7 @@ namespace OceanicClearance
                         if (hasOceanicClearance(flightplan.callsign))
                         {
                             auto controllerData = controllerDataAPI_.getByCallsign(flightplan.callsign);
-                            if (controllerData.has_value())
+                            if (controllerData)
                             {
                                 int oeanicFlightLevel = getOceanicFlightLevel(flightplan.callsign);
                                 int clearedFlightLevel = controllerData->clearedFlightLevel;

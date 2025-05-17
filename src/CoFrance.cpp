@@ -75,7 +75,7 @@ void CoFrancePlugin::OnFsdDisconnected(const PluginSDK::Fsd::FsdDisconnectedEven
 bool CoFrancePlugin::isConnected() const
 {
     auto connection = coreAPI_->fsd().getConnection();
-    if (connection.has_value())
+    if (connection)
     {
         return connection->isConnected;
     }
@@ -85,7 +85,7 @@ bool CoFrancePlugin::isConnected() const
 bool CoFrancePlugin::isConnectedAsController() const
 {
     auto connection = coreAPI_->fsd().getConnection();
-    if (connection.has_value())
+    if (connection)
     {
         return connection->isConnected && connection->facility != PluginSDK::Fsd::NetworkFacility::OBS;
     }
@@ -95,7 +95,7 @@ bool CoFrancePlugin::isConnectedAsController() const
 bool CoFrancePlugin::isConnectedAsCTR() const
 {
     auto connection = coreAPI_->fsd().getConnection();
-    if (connection.has_value())
+    if (connection)
     {
         return connection->isConnected && connection->facility == PluginSDK::Fsd::NetworkFacility::CTR;
     }

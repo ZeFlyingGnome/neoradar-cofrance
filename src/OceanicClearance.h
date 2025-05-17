@@ -56,6 +56,5 @@ namespace OceanicClearance
 
             // Helper functions
             bool stringContainsValue(const std::string &str, const std::vector<std::string> &values);
-            bool stringStartsWith(const std::string &str, const std::string &prefix);
     };
 }

@@ -80,7 +80,7 @@ namespace OceanicClearance
                         set empty
                     
                     */
-                    if (flightplan.isValid && stringContainsValue(flightplan.route, BREST_OCEANIC_POINTS))
+                    if (flightplan.isValid && stringContainsValue(flightplan.route.rawRoute, BREST_OCEANIC_POINTS))
                     {
                         if (hasOceanicClearance(flightplan.callsign))
                         {
@@ -210,14 +210,5 @@ namespace OceanicClearance
             }
         }
         return false;
-    }
-
-    bool OceanicClearance::stringStartsWith(const std::string &str, const std::string &prefix)
-    {
-        if (str.size() < prefix.size())
-        {
-            return false;
-        }
-        return std::equal(prefix.begin(), prefix.end(), str.begin());
     }
 }

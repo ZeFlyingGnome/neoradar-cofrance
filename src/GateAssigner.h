@@ -10,7 +10,7 @@
 namespace GateAssigner
 {
     const int POLLING_INTERVAL_SEC = 30; // Polling interval in seconds
-    const int AIRCRAFT_MAX_ALTITUE = 6000; // Maximum altitude for gate assignment
+    const int MAX_DISTANCE_TO_DESTINATION = 20;
     const std::string GATE_ASSIGNER_TAG = "gate";
     const std::string GATE_ASSIGNER_API_BASE = "http://fire-ops.ew.r.appspot.com";
     const std::string GATE_ASSIGNER_API_AIRPORTS = "/api/cfr/stand";

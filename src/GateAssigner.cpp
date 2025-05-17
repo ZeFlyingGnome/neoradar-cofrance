@@ -74,24 +74,21 @@ namespace GateAssigner
                 {
                     if (std::find(supportedAirports_.begin(), supportedAirports_.end(), flightplan.destination) != supportedAirports_.end())
                     {
-                        std::optional<PluginSDK::Aircraft::Aircraft> aircraft = aircraftAPI_.getByCallsign(flightplan.callsign);
-                        if (aircraft.has_value())
+                        auto distanceToDestination = aircraftAPI_.getDistanceToDestination(flightplan.callsign);
+                        if (distanceToDestination && *distanceToDestination < MAX_DISTANCE_TO_DESTINATION)
                         {
-                            if (aircraft.value().position.altitude < AIRCRAFT_MAX_ALTITUE)
+#ifdef DEBUG
+                            logger_.info("Requesting gate for " + flightplan.callsign + " from " + flightplan.origin + " to " + flightplan.destination + " with wake category " + flightplan.wakeCategory);
+#endif
+                            std::string assignedGate = assignGate(flightplan.callsign, flightplan.origin, flightplan.destination, flightplan.wakeCategory);
+                            if (!assignedGate.empty())
                             {
 #ifdef DEBUG
-                                logger_.info("Requesting gate for " + flightplan.callsign + " from " + flightplan.origin + " to " + flightplan.destination + " with wake category " + flightplan.wakeCategory);
+                                logger_.info("Assigned gate " + assignedGate + " to " + flightplan.callsign);
 #endif
-                                std::string assignedGate = assignGate(flightplan.callsign, flightplan.origin, flightplan.destination, flightplan.wakeCategory);
-                                if (!assignedGate.empty())
-                                {
-#ifdef DEBUG
-                                    logger_.info("Assigned gate " + assignedGate + " to " + flightplan.callsign);
-#endif
-                                    PluginSDK::Tag::TagContext context;
-                                    context.callsign = flightplan.callsign;
-                                    tagAPI_.getInterface()->UpdateTagValue(gateTagId_, assignedGate, context);
-                                }
+                                PluginSDK::Tag::TagContext context;
+                                context.callsign = flightplan.callsign;
+                                tagAPI_.getInterface()->UpdateTagValue(gateTagId_, assignedGate, context);
                             }
                         }
                     }

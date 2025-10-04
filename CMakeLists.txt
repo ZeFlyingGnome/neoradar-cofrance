@@ -38,7 +38,6 @@ set(SOURCES
     src/main.cpp
     src/CoFrance.cpp
     src/GateAssigner.cpp
-    src/OceanicClearance.cpp
 )
 
 # Define the plugin library

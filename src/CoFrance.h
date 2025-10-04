@@ -2,7 +2,6 @@
 #pragma once
 #include <NeoRadarSDK/SDK.h>
 #include "GateAssigner.h"
-#include "OceanicClearance.h"
 
 
 class CoFrancePlugin : public PluginSDK::BasePlugin
@@ -20,8 +19,6 @@ public:
     void OnFsdDisconnected(const PluginSDK::Fsd::FsdDisconnectedEvent* event) override;
     
     bool isConnected() const;
-    bool isConnectedAsController() const;
-    bool isConnectedAsCTR() const;
     
 private:
     bool initialized_ = false;
@@ -31,5 +28,4 @@ private:
     PluginSDK::Logger::LoggerAPI *logger_ = nullptr;
 
     std::unique_ptr<GateAssigner::GateAssigner> gateAssigner_;
-    std::unique_ptr<OceanicClearance::OceanicClearance> oceanicClearance_;
 };

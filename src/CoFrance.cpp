@@ -21,17 +21,10 @@ void CoFrancePlugin::Initialize(const PluginSDK::PluginMetadata &metadata, Plugi
         coreAPI_->tag(),
         *logger_
     );
-    oceanicClearance_ = std::make_unique<OceanicClearance::OceanicClearance>(
-        coreAPI_->controllerData(),
-        coreAPI_->flightplan(),
-        coreAPI_->tag(),
-        *logger_
-    );
 
     if (isConnected())
     {
         gateAssigner_->startPoller();
-        oceanicClearance_->startPoller();
     }
 
     logger_->info("CoFrance initialized successfully");
@@ -44,8 +37,6 @@ void CoFrancePlugin::Shutdown()
     {
         gateAssigner_.get()->stopPoller();
         gateAssigner_.reset();
-        oceanicClearance_.get()->stopPoller();
-        oceanicClearance_.reset();
         initialized_ = false;
         logger_->info("CoFrance shutdown complete");
     }
@@ -63,13 +54,11 @@ PluginSDK::PluginMetadata CoFrancePlugin::GetMetadata() const
 void CoFrancePlugin::OnFsdConnected(const PluginSDK::Fsd::FsdConnectedEvent* event)
 {
     gateAssigner_->startPoller();
-    oceanicClearance_->startPoller();
 }
 
 void CoFrancePlugin::OnFsdDisconnected(const PluginSDK::Fsd::FsdDisconnectedEvent* event)
 {
     gateAssigner_->stopPoller();
-    oceanicClearance_->stopPoller();        
 }
 
 bool CoFrancePlugin::isConnected() const
@@ -78,26 +67,6 @@ bool CoFrancePlugin::isConnected() const
     if (connection)
     {
         return connection->isConnected;
-    }
-    return false;
-}
-
-bool CoFrancePlugin::isConnectedAsController() const
-{
-    auto connection = coreAPI_->fsd().getConnection();
-    if (connection)
-    {
-        return connection->isConnected && connection->facility != PluginSDK::Fsd::NetworkFacility::OBS;
-    }
-    return false;
-}
-
-bool CoFrancePlugin::isConnectedAsCTR() const
-{
-    auto connection = coreAPI_->fsd().getConnection();
-    if (connection)
-    {
-        return connection->isConnected && connection->facility == PluginSDK::Fsd::NetworkFacility::CTR;
     }
     return false;
 }
